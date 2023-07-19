@@ -8,6 +8,20 @@ body {
 .container {
   max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 5px;
+}
+
+.streak-form {
+  margin-bottom: 20px;
+}
+
+.streak-form input[type="text"],
+.streak-form input[type="color"],
+.streak-form button {
+  margin-right: 10px;
+}
 
 .streak-grid {
   margin-top: 20px;
@@ -21,4 +35,12 @@ body {
   height: 40px;
   border: 1px solid #ccc;
   cursor: pointer;
+}
+
+.streak-grid .square.today {
+  background-color: #ffcccb; /* Light pink for the current day */
+}
+
+.streak-grid .square.filled {
+  background-color: #aaffaa; /* Light green for filled squares */
 }
