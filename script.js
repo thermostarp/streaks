@@ -30,6 +30,50 @@ function loadStreaks() {
   }
 }
 
+
+ renderStreakGrid();
+}
+
+function renderStreakGrid() {
+  const streakGrid = document.getElementById('streak-grid');
+  streakGrid.innerHTML = '';
+
+  const userStreaks = getUserStreaks();
+  const today = new Date().toLocaleDateString();
+
+  for (let i = 0; i < 7; i++) {
+    const square = document.createElement('div');
+    square.className = 'square';
+
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - i);
+    const dateKey = currentDate.toLocaleDateString();
+
+    if (dateKey === today) {
+      square.classList.add('today');
+      square.onclick = () => handleSquareClick(dateKey, square);
+    }
+
+    if (userStreaks.includes(dateKey)) {
+      square.classList.add('filled');
+    }
+
+    streakGrid.appendChild(square);
+  }
+}
+
+function handleSquareClick(dateKey, square) {
+  const userStreaks = getUserStreaks();
+
+  if (!userStreaks.includes(dateKey)) {
+    userStreaks.push(dateKey);
+    localStorage.setItem(currentUser, JSON.stringify(userStreaks));
+    square.classList.add('filled');
+  }
+}
+
+
+
 function renderStreaks() {
   const streaksContainer = document.getElementById('streaks-container');
   streaksContainer.innerHTML = '';
