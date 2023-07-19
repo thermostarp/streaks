@@ -1,4 +1,20 @@
-const streaks = [];
+const currentUser = getCurrentUser();
+
+function getCurrentUser() {
+  const storedUsername = localStorage.getItem('username');
+  if (storedUsername && storedUsername.trim() !== '') {
+    return storedUsername;
+  }
+
+  const username = prompt('Please enter your username:');
+  if (username && username.trim() !== '') {
+    localStorage.setItem('username', username);
+    return username;
+  }
+
+  alert('Invalid username. Please refresh the page and try again.');
+  return null;
+}
 
 function createStreak() {
   const habitName = document.getElementById('habitName').value;
@@ -12,26 +28,26 @@ function createStreak() {
   const streak = {
     name: habitName,
     color: habitColor,
+    dates: [],
   };
 
-  streaks.push(streak);
-  saveStreaksLocally();
+  saveStreak(streak);
   renderStreaks();
 }
 
-function saveStreaksLocally() {
-  localStorage.setItem('streaks', JSON.stringify(streaks));
+function saveStreak(streak) {
+  const userStreaks = getUserStreaks();
+  userStreaks.push(streak);
+  localStorage.setItem(currentUser, JSON.stringify(userStreaks));
 }
 
-function loadStreaks() {
-  const storedStreaks = localStorage.getItem('streaks');
-  if (storedStreaks) {
-    streaks.push(...JSON.parse(storedStreaks));
-  }
+function getUserStreaks() {
+  const userStreaks = localStorage.getItem(currentUser);
+  return userStreaks ? JSON.parse(userStreaks) : [];
 }
 
-
- renderStreakGrid();
+function renderStreaks() {
+  renderStreakGrid();
 }
 
 function renderStreakGrid() {
@@ -54,7 +70,7 @@ function renderStreakGrid() {
       square.onclick = () => handleSquareClick(dateKey, square);
     }
 
-    if (userStreaks.includes(dateKey)) {
+    if (userStreaks.some(streak => streak.dates.includes(dateKey))) {
       square.classList.add('filled');
     }
 
@@ -65,31 +81,25 @@ function renderStreakGrid() {
 function handleSquareClick(dateKey, square) {
   const userStreaks = getUserStreaks();
 
-  if (!userStreaks.includes(dateKey)) {
-    userStreaks.push(dateKey);
+  let streakFound = false;
+  for (const streak of userStreaks) {
+    if (streak.dates.includes(dateKey)) {
+      streakFound = true;
+      break;
+    }
+  }
+
+  if (!streakFound) {
+    const streak = userStreaks.find(streak => !streak.dates.length);
+    if (!streak) {
+      alert('You have already completed all your streaks for today.');
+      return;
+    }
+
+    streak.dates.push(dateKey);
     localStorage.setItem(currentUser, JSON.stringify(userStreaks));
     square.classList.add('filled');
   }
 }
 
-
-
-function renderStreaks() {
-  const streaksContainer = document.getElementById('streaks-container');
-  streaksContainer.innerHTML = '';
-
-  streaks.forEach(streak => {
-    const streakBox = document.createElement('div');
-    streakBox.className = 'streak-box';
-    streakBox.style.backgroundColor = streak.color;
-
-    const streakName = document.createElement('div');
-    streakName.textContent = streak.name;
-
-    streakBox.appendChild(streakName);
-    streaksContainer.appendChild(streakBox);
-  });
-}
-
-loadStreaks();
 renderStreaks();
